@@ -1,0 +1,120 @@
+project_name: deepseek-harness
+pipeline: workflow/pipeline-full-with-deep-audit.yaml
+current_phase: complete
+last_updated: "2026-08-20T02:54:09.454Z"
+schema_version: 1
+phases:
+  architecture:
+    status: complete
+    owner_notes:
+      - "Completed via codecarto_complete."
+      - "Primary output: .codecarto/findings/architecture/architecture-map.md"
+      - "Validation: PASS"
+      - "Mapped a 233-package pnpm monorepo (packages/<group>/<pkg>) plus vendor/, apps/, python/, native/, examples/, website/."
+      - "~483K LOC TypeScript across packages/apps/native/python (excluding node_modules/lib/dist)."
+      - "Execution strategy: inline (single chat driving MCP tools, orchestrator + executor)."
+      - "Layering: vendored Cordis framework -> zero-dep util -> core spine -> capability seams -> bundles/shells. No cycles in peer-dependency graph."
+      - "Wrote all 5 secondary outputs (public-surfaces, runtime-lifecycle, state-and-storage, build-and-deploy, config-model) with dated architecture sections."
+    outputs_present:
+      - findings/architecture/architecture-map.md
+    open_questions: []
+    carry_forward: []
+  defect-scan-mechanical:
+    status: complete
+    owner_notes:
+      - "Completed via codecarto_complete."
+      - "Primary output: .codecarto/findings/defect-scan-mechanical/mechanical-defects.md"
+      - "Validation: PASS WITH GAPS"
+      - "Ran mechanical passes 1 (logic), 2 (error handling), 6 (config/env) over the highest-signal spine/util/persistence packages."
+      - "9 findings total: 0 critical, 0 high, 2 medium, 7 low. No critical/high mechanical defects in the sampled surface."
+      - "Sampled ~10 of 233 packages (util/*, core/agent-loop, fs-local, subprocess-local, credentials-local, storage-sqlite, session-persistence-jsonl/sqlite)."
+      - "The codebase is unusually defensive (structured error taxonomies, owner-only file modes, schema-version rejection, revision-stable reads); mechanical defects are subtle."
+    outputs_present:
+      - findings/defect-scan-mechanical/mechanical-defects.md
+    open_questions: []
+    carry_forward: []
+  contracts:
+    status: complete
+    owner_notes:
+      - "Completed via codecarto_complete."
+      - "Primary output: .codecarto/findings/contracts/behavioral-contracts.md"
+      - "Validation: PASS"
+      - "Recovered behavioral contracts across CLI, model-facing tool surface, session service, and credentials."
+      - "Closed arch-CF2 (per-capability Service Definition contracts) by enumerating tool/session/credential contracts."
+      - "20+ model-facing tools documented via the generated docs/tool-catalog.md (boot-verified in CI)."
+      - "Security model: API-key auth, capability-based authorization, layered credential precedence, sandbox seam."
+      - "Appended contracts-phase sections to public-surfaces, runtime-lifecycle, state-and-storage, config-model secondary outputs."
+    outputs_present:
+      - findings/contracts/behavioral-contracts.md
+    open_questions: []
+    carry_forward: []
+  protocols:
+    status: complete
+    owner_notes:
+      - "Completed via codecarto_complete."
+      - "Primary output: .codecarto/findings/protocols/protocols-and-state.md"
+      - "Validation: PASS"
+      - "Extracted wire formats for SDK JSON-RPC (newline-delimited JSON-RPC 2.0 over stdio), ACP server, Typert RPC (Remote/Gateway bindings), and the session event stream."
+      - "Closed arch-CF1 and con-CF1 (RPC wire schemas) by documenting full request/result/notification shapes."
+      - "Closed q-typert-rpc-schema: the Typert wire schema is answerable from source (Remote/RemoteScope decorators + bindTypertRemote + endpoint segment grammar), not a runtime test."
+      - "Documented 8 compatibility hazards (JSON-RPC framing, SESSION_FORMAT_VERSION 0, SQLite pragmas, zstd frames, ES2024 features, Windows env/taskkill, POSIX group signalling, node:sqlite sync API)."
+      - "Appended protocols-phase sections to public-surfaces, runtime-lifecycle, state-and-storage, config-model secondary outputs."
+    outputs_present:
+      - findings/protocols/protocols-and-state.md
+    open_questions: []
+    carry_forward: []
+  defect-scan-semantic:
+    status: complete
+    owner_notes:
+      - "Completed via codecarto_complete."
+      - "Primary output: .codecarto/findings/defect-scan-semantic/semantic-defects.md"
+      - "Validation: PASS WITH GAPS"
+      - "Ran semantic passes 3 (concurrency), 4 (security), 5 (contract violations) over the highest-signal concurrency/security/contract surfaces."
+      - "7 findings total: 0 critical, 0 high, 3 medium, 4 low. No critical/high semantic defects in the sampled surface."
+      - "Closed mech-CF1 (runGroup scheduler-failure surfacing), mech-CF2 (readStableFile unbounded retry), mech-CF3 (broadened read; residual documented as coverage limitation)."
+      - "Security posture is strong: owner-only modes, env scrubbing, no-shell execFile, wx exclusive-create, secret redaction in YAML diagnostics."
+      - "Read additional packages beyond the mechanical sample: llm-retry, acp, sdk/protocol, typert/protocol, session types."
+    outputs_present:
+      - findings/defect-scan-semantic/semantic-defects.md
+    open_questions: []
+    carry_forward: []
+  porting:
+    status: complete
+    owner_notes:
+      - "Completed via codecarto_complete."
+      - "Primary output: .codecarto/findings/porting/reverse-engineering-bundle.md"
+      - "Validation: PASS"
+      - "Synthesized architecture, contracts, protocols, and both defect reports into a reverse-engineering bundle."
+      - "16 total defect findings consolidated (0 critical, 0 high, 5 medium, 11 low) with fix-before-porting/port-differently/leave-behind dispositions."
+      - "Closed pro-CF1 by flagging the api-gateway transport and client-host wire protocol as deep-read triggers in the Source Index."
+      - "10 portability hazards consolidated; 2 open questions carried (q-approval-default, q-api-gateway-transport)."
+      - "Appended porting-phase sections to all 5 secondary outputs."
+    outputs_present:
+      - findings/porting/reverse-engineering-bundle.md
+    open_questions: []
+    carry_forward: []
+  reimplementation-spec:
+    status: complete
+    owner_notes:
+      - "Completed via codecarto_complete."
+      - "Primary output: .codecarto/findings/reimplementation-spec/reimplementation-spec.md"
+      - "Validation: PASS"
+      - "Produced the final language-agnostic reimplementation spec (auto-default; Strategic Alignment Hook suppressed for the unattended run)."
+      - "8 concept-level modules, 3-layer split, 12 acceptance scenarios, 3 known unknowns, 5 spikes."
+      - "Closed por-CF1 by treating the api-gateway transport as a known unknown + spike rather than pinning a transport."
+      - "All 16 defect dispositions preserved as design consequences (fix-before-porting/port-differently/leave-behind)."
+    outputs_present:
+      - findings/reimplementation-spec/reimplementation-spec.md
+    open_questions:
+      -
+        id: q-spec-variant
+        kind: needs-maintainer-decision
+        description: "The spec defaulted to language-agnostic (auto-default); an opinionated target stack was not locked."
+        deferred_reason: "The Strategic Alignment Hook was suppressed for the unattended run."
+    carry_forward: []
+next_actions:
+  - "All phases complete. Review findings; post-pipeline skills: codecarto_list_skills / codecarto_skill."
+  - "1 open question(s) and 0 post-pipeline item(s) remain — apply resolutions with codecarto_amend (write scratch/amendments/<slug>.yaml from templates/amendment.yaml)."
+  - "Publish the finished spec to a library: codecarto_publish (create one with codecarto_library_init; see the library guide topic)."
+  - "Dashboard: .codecarto/dashboard.html (refreshed on completion and amendment; codecarto_dashboard re-renders on demand). Usage totals: codecarto_usage."
+post_pipeline: []

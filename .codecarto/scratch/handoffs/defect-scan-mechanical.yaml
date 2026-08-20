@@ -1,0 +1,39 @@
+schema_version: 1
+phase_id: defect-scan-mechanical
+owner_notes:
+  - "Ran mechanical passes 1 (logic), 2 (error handling), 6 (config/env) over the highest-signal spine/util/persistence packages."
+  - "9 findings total: 0 critical, 0 high, 2 medium, 7 low. No critical/high mechanical defects in the sampled surface."
+  - "Sampled ~10 of 233 packages (util/*, core/agent-loop, fs-local, subprocess-local, credentials-local, storage-sqlite, session-persistence-jsonl/sqlite)."
+  - "The codebase is unusually defensive (structured error taxonomies, owner-only file modes, schema-version rejection, revision-stable reads); mechanical defects are subtle."
+open_questions: []
+carry_forward:
+  - id: mech-CF1
+    kind: defer-to-phase
+    target_phase: defect-scan-semantic
+    description: executeToolCalls/runGroup concurrency (Promise.race settlement, reclassification after ordered commits, aborted/schedulerFailure interplay) is race-sensitive and needs the concurrency pass (3) rubric.
+    deferred_reason: Concurrency/race analysis is the semantic phase's job.
+  - id: mech-CF2
+    kind: defer-to-phase
+    target_phase: defect-scan-semantic
+    description: OutputCollector fd lifecycle (discardSpill/seal/finalize) and readStableFile's unbounded retry loop involve concurrent writer/reader interaction; resource-leak and race framing belongs to pass 3.
+    deferred_reason: Resource/race framing is semantic.
+  - id: mech-CF3
+    kind: defer-to-phase
+    target_phase: defect-scan-semantic
+    description: Mechanical scan sampled ~10 of 233 packages; the remaining packages (client UI, host, llm providers, subagent, workflow, etc.) were not read for mechanical defects.
+    deferred_reason: Deeper, broader reading is the semantic phase's rubric.
+carry_forward_closures: []
+open_question_closures: []
+post_pipeline: []
+decisions: []
+proposed_conventions: []
+closeout_summary: "Mechanical defect scan: 9 findings (0 critical, 0 high, 2 medium, 7 low) across passes 1/2/6 over the sampled spine/util/persistence surface. Concurrency/resource races and unread packages routed to defect-scan-semantic."
+closeout_content: |-
+  # Closeout — defect-scan-mechanical
+
+  ## Summary
+
+  - Passes 1 (logic), 2 (error handling), 6 (config/env) over ~10 high-signal packages.
+  - 9 findings: 2 medium (clampTimeout unvalidated def/max; readStableFile unbounded retry), 7 low.
+  - No critical or high mechanical defects in the sampled surface.
+  - Routed mech-CF1/CF2 (concurrency/resource races) and mech-CF3 (unread packages) to defect-scan-semantic.

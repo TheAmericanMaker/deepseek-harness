@@ -1,0 +1,35 @@
+schema_version: 1
+phase_id: contracts
+owner_notes:
+  - "Recovered behavioral contracts across CLI, model-facing tool surface, session service, and credentials."
+  - "Closed arch-CF2 (per-capability Service Definition contracts) by enumerating tool/session/credential contracts."
+  - "20+ model-facing tools documented via the generated docs/tool-catalog.md (boot-verified in CI)."
+  - "Security model: API-key auth, capability-based authorization, layered credential precedence, sandbox seam."
+  - "Appended contracts-phase sections to public-surfaces, runtime-lifecycle, state-and-storage, config-model secondary outputs."
+open_questions:
+  - id: q-approval-default
+    kind: needs-runtime-test
+    description: Whether the approval seam defaults to allow or ask when no approval provider is loaded (tools/pre-execute JSDoc says missing approval support turns ask into denial, but the bare-composition default posture is not pinned from source alone).
+    deferred_reason: Requires a runtime test against a minimal composition.
+carry_forward:
+  - id: con-CF1
+    kind: defer-to-phase
+    target_phase: protocols
+    description: ACP, JSON-RPC, and Typert RPC wire schemas (request/response shapes, framing) not extracted.
+    deferred_reason: Wire-format extraction is the protocols phase's rubric.
+carry_forward_closures:
+  - arch-CF2
+open_question_closures: []
+post_pipeline: []
+decisions: []
+proposed_conventions: []
+closeout_summary: "Behavioral contracts recovered across CLI, tool surface, session, and credentials; arch-CF2 closed. Wire schemas deferred to protocols."
+closeout_content: |-
+  # Closeout — contracts
+
+  ## Summary
+
+  - Surfaces: CLI (web/headless/dump-config), model-facing tool surface (20+ tools), session service, credentials.
+  - Security: API-key auth, capability-based authz, layered credential precedence, sandbox seam.
+  - Closed arch-CF2 (capability contracts enumerated).
+  - Routed con-CF1 (RPC wire schemas) to protocols.

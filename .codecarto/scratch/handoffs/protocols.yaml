@@ -1,0 +1,40 @@
+schema_version: 1
+phase_id: protocols
+owner_notes:
+  - "Extracted wire formats for SDK JSON-RPC (newline-delimited JSON-RPC 2.0 over stdio), ACP server, Typert RPC (Remote/Gateway bindings), and the session event stream."
+  - "Closed arch-CF1 and con-CF1 (RPC wire schemas) by documenting full request/result/notification shapes."
+  - "Closed q-typert-rpc-schema: the Typert wire schema is answerable from source (Remote/RemoteScope decorators + bindTypertRemote + endpoint segment grammar), not a runtime test."
+  - "Documented 8 compatibility hazards (JSON-RPC framing, SESSION_FORMAT_VERSION 0, SQLite pragmas, zstd frames, ES2024 features, Windows env/taskkill, POSIX group signalling, node:sqlite sync API)."
+  - "Appended protocols-phase sections to public-surfaces, runtime-lifecycle, state-and-storage, config-model secondary outputs."
+open_questions:
+  - id: q-api-gateway-transport
+    kind: needs-runtime-test
+    description: The exact Typert Gateway transport framing (HTTP route shape vs stdio) lives in packages/api/gateway + packages/api/remotes, which were not read in full.
+    deferred_reason: Requires reading the api group source or a runtime capture.
+carry_forward:
+  - id: pro-CF1
+    kind: defer-to-phase
+    target_phase: porting
+    description: The api-gateway transport framing (HTTP vs stdio) and the client-host wire protocol are not fully extracted; the porting bundle should note them as targeted deep-read triggers.
+    deferred_reason: Synthesis-level resolution; the porting bundle's Source Index is the right place to flag deep-read triggers.
+carry_forward_closures:
+  - arch-CF1
+  - con-CF1
+open_question_closures:
+  - q-typert-rpc-schema
+  - oq-defect-scan-mechanical-1
+post_pipeline: []
+decisions: []
+proposed_conventions: []
+closeout_summary: "Wire formats extracted for SDK JSON-RPC, ACP, Typert RPC, and the session event stream; arch-CF1, con-CF1, and q-typert-rpc-schema closed. 8 compatibility hazards documented."
+closeout_content: |-
+  # Closeout — protocols
+
+  ## Summary
+
+  - SDK JSON-RPC: initialize/session/prompt/shutdown + 4 notifications over newline-delimited JSON-RPC 2.0.
+  - ACP: initialize/newSession/prompt/cancel; one prompt in flight per session; quiesce drains continuable descendants.
+  - Typert RPC: Remote/RemoteScope decorators + bindTypertRemote; endpoint segment grammar.
+  - Session event stream: SessionEventMap (13 core event types), surface ops, turn-end reasons.
+  - Closed arch-CF1, con-CF1, q-typert-rpc-schema, oq-defect-scan-mechanical-1.
+  - Routed pro-CF1 (api-gateway transport) to porting.

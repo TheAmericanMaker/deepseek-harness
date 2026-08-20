@@ -1,0 +1,36 @@
+schema_version: 1
+# Post-pipeline amendment: resolve open questions on evidence gathered after
+# the pipeline completed (source reads + one runtime smoke test).
+open_question_closures:
+  - q-approval-default
+  - q-api-gateway-transport
+  - oq-defect-scan-semantic-1
+post_pipeline_closures:
+  - post-spike-1
+notes:
+  - "q-approval-default RESOLVED from source (packages/core/tools/src/index.ts:1689-1729, serviceAsk): when ctx.get('approval') is undefined, an `ask` decision degrades to `{ kind: 'deny', reason: '... requires approval (not yet supported)' }`. The bare-composition default posture is DENY (fail-closed), not allow. This is an observed fact, not a runtime test."
+  - "q-api-gateway-transport RESOLVED from source (packages/api/gateway/src/index.ts:104-111): TypertGatewayService registers on connectionCtx.connection.rpc.intercept('/api', ...) with authority 'trusted-host'. The transport is the client<->host connection RPC (@deepseek-ai/dsh-client-connection: websocket-downlink + http-bridge), NOT stdio. Endpoint shape is /api/<namespace>/<method>. The post-spike-1 prototype is therefore unnecessary."
+  - "oq-defect-scan-semantic-1 RESOLVED: this was the framework auto-assigned id for the semantic phase's PARTIAL coverage criterion. It is a documented, accepted coverage limitation (the full 233-package surface was not exhaustively read), not an actionable open question. No runtime test or maintainer decision is required."
+  - "CONTRADICTION CORRECTION: pnpm reports cyclic WORKSPACE dependencies (api/gateway <-> client/connection <-> host/apiproxy <-> api/remotes; client/ui-renderer <-> test-support/client-runtime; sandbox/sandbox-local <-> sandbox/sandbox-windows-acl; subagent/subagent-spawn-in-process <-> subagent/tool-subagent; vendor/cordis <-> vendor/include). The architecture map's 'no cycles' claim was scoped to the PEER-dependency graph (docs/module-graph.md is derived from peerDependencies only). The full workspace dependency graph (including devDependencies) is NOT acyclic. This is a correction to the architecture map's Layer Map section, not a new defect."
+  - "RUNTIME SMOKE TEST: `CI=true pnpm dsh --profile web --dump-config` succeeded (exit 0), emitting 504 lines of composed config. This verifies the boot-composition path works from source on this host (Node 22.22.3, Linux x64)."
+closeout_summary: "Resolved 3 open questions on evidence (approval default = deny; Typert Gateway transport = client connection RPC over /api, not stdio; semantic coverage limitation accepted) and retired the api-gateway transport spike. Recorded a contradiction correction: the workspace dependency graph has cycles (peer-dependency graph is acyclic)."
+closeout_content: |-
+  # Amendment — post-pipeline-evidence-resolution
+
+  ## Resolved open questions
+
+  - **q-approval-default** → DENY (fail-closed). `serviceAsk` degrades an `ask` to deny when no approval service is composed.
+  - **q-api-gateway-transport** → client↔host connection RPC (`/api/<namespace>/<method>`, WebSocket downlink + HTTP bridge), not stdio.
+  - **oq-defect-scan-semantic-1** → documented coverage limitation, accepted; no action required.
+
+  ## Retired post-pipeline item
+
+  - **post-spike-1** (api-gateway transport prototype) → unnecessary; resolved from source.
+
+  ## Contradiction correction
+
+  - The architecture map's "no cycles" claim holds only for the peer-dependency graph. pnpm reports cyclic workspace dependencies (5 cycle groups). Corrected here; the architecture map's Layer Map section should be read with this caveat.
+
+  ## Runtime verification
+
+  - `CI=true pnpm dsh --profile web --dump-config` → exit 0, 504 lines of composed config.

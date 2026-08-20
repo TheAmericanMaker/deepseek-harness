@@ -1,0 +1,41 @@
+schema_version: 1
+phase_id: reimplementation-spec
+owner_notes:
+  - "Produced the final language-agnostic reimplementation spec (auto-default; Strategic Alignment Hook suppressed for the unattended run)."
+  - "8 concept-level modules, 3-layer split, 12 acceptance scenarios, 3 known unknowns, 5 spikes."
+  - "Closed por-CF1 by treating the api-gateway transport as a known unknown + spike rather than pinning a transport."
+  - "All 16 defect dispositions preserved as design consequences (fix-before-porting/port-differently/leave-behind)."
+open_questions:
+  - id: q-approval-default
+    kind: needs-runtime-test
+    description: Whether the approval seam defaults to allow or ask when no approval provider is loaded.
+    deferred_reason: Requires a runtime test against a minimal composition.
+  - id: q-api-gateway-transport
+    kind: needs-runtime-test
+    description: The exact Typert Gateway transport framing (HTTP vs stdio) in packages/api/*.
+    deferred_reason: Requires reading the api group source or a runtime capture.
+  - id: q-spec-variant
+    kind: needs-maintainer-decision
+    description: The spec defaulted to language-agnostic (auto-default); an opinionated target stack was not locked.
+    deferred_reason: The Strategic Alignment Hook was suppressed for the unattended run.
+carry_forward: []
+carry_forward_closures:
+  - por-CF1
+open_question_closures: []
+post_pipeline:
+  - id: post-spike-1
+    kind: spike
+    description: Prototype the api-gateway transport framing (HTTP vs stdio) to resolve q-api-gateway-transport.
+decisions: []
+proposed_conventions: []
+closeout_summary: "Final language-agnostic reimplementation spec produced: 8 modules, 12 acceptance scenarios, 3 known unknowns, 5 spikes. por-CF1 closed. Pipeline complete."
+closeout_content: |-
+  # Closeout — reimplementation-spec
+
+  ## Summary
+
+  - Language-agnostic spec (auto-default; hook suppressed for unattended run).
+  - 8 concept-level modules; 3-layer split (core semantics / adapters / delivery surfaces).
+  - 12 black-box acceptance scenarios; 3 known unknowns; 5 spikes.
+  - All 16 defect dispositions preserved as design consequences.
+  - Closed por-CF1 (api-gateway transport → known unknown + spike).

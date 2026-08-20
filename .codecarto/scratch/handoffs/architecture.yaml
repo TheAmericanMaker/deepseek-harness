@@ -1,0 +1,41 @@
+schema_version: 1
+phase_id: architecture
+owner_notes:
+  - "Mapped a 233-package pnpm monorepo (packages/<group>/<pkg>) plus vendor/, apps/, python/, native/, examples/, website/."
+  - "~483K LOC TypeScript across packages/apps/native/python (excluding node_modules/lib/dist)."
+  - "Execution strategy: inline (single chat driving MCP tools, orchestrator + executor)."
+  - "Layering: vendored Cordis framework -> zero-dep util -> core spine -> capability seams -> bundles/shells. No cycles in peer-dependency graph."
+  - "Wrote all 5 secondary outputs (public-surfaces, runtime-lifecycle, state-and-storage, build-and-deploy, config-model) with dated architecture sections."
+open_questions:
+  - id: q-typert-rpc-schema
+    kind: needs-runtime-test
+    description: Exact Typert RPC wire schema (request/response shapes) not extracted from source.
+    deferred_reason: Requires reading packages/typert/* and packages/api/* source; deferred to protocols phase.
+carry_forward:
+  - id: arch-CF1
+    kind: defer-to-phase
+    target_phase: protocols
+    description: JSON-RPC, ACP, and Typert RPC wire formats listed by name only; schemas not extracted.
+    deferred_reason: Wire-format extraction is the protocols phase's rubric.
+  - id: arch-CF2
+    kind: defer-to-phase
+    target_phase: contracts
+    description: Per-capability Service Definition contracts (trigger/defaults/outputs/side-effects) not enumerated.
+    deferred_reason: Behavioral contract recovery is the contracts phase's rubric.
+carry_forward_closures: []
+open_question_closures: []
+post_pipeline: []
+decisions: []
+proposed_conventions: []
+closeout_summary: "Architecture mapped: 233-package monorepo layered as vendored Cordis -> util -> core spine -> capability seams -> bundles/shells. Wire formats deferred to protocols; capability contracts deferred to contracts."
+closeout_content: |-
+  # Closeout — architecture
+
+  ## Summary
+
+  - DeepSeek Harness is a plugin-based agent harness on vendored Cordis ("everything is a plugin").
+  - 233 npm packages in packages/<group>/<pkg>, plus vendor/ (9 vendored framework packages), apps/ (cli + web), python/ (SDK + runtime), native/ (Landlock launcher), examples/, website/.
+  - Dependency direction is acyclic: vendored framework -> zero-dep util -> core spine -> capability seams -> bundles/shells.
+  - Public surfaces: dsh CLI, Web UI, ACP server, JSON-RPC SDK, Python SDK, native launcher, hook bridges, MCP client.
+  - Concurrency: async/await event loop + worker threads + subprocess/PTY providers + OS-specific sandbox backends.
+  - Build: pnpm + tsc project references + tsdown + vite; tag-driven release (v* npm, python-v* wheels).
